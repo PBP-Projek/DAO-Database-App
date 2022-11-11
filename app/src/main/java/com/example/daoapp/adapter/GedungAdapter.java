@@ -18,10 +18,12 @@ import java.util.List;
 public class GedungAdapter extends RecyclerView.Adapter<GedungAdapter.ViewHolder> {
     private List<Gedung> gedungs;
     private GedungListener moreListener;
+    private GedungListener itemListener;
 
-    public GedungAdapter(List<Gedung> gedungs, GedungListener moreListener) {
+    public GedungAdapter(List<Gedung> gedungs, GedungListener moreListener, GedungListener itemListener) {
         this.gedungs = gedungs;
         this.moreListener = moreListener;
+        this.itemListener = itemListener;
     }
 
     @NonNull
@@ -45,6 +47,7 @@ public class GedungAdapter extends RecyclerView.Adapter<GedungAdapter.ViewHolder
         holder.tvGedung.setText(namaGedung);
         holder.tvProdi.setText(prodi);
         holder.ivMore.setOnClickListener(v -> moreListener.onClick(position,v));
+        holder.itemView.setOnClickListener(v -> itemListener.onClick(position,v));
     }
 
     @Override

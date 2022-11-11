@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey;
 
 @Entity
 public class Ruangan {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     private int idRuangan;
     private String namaRuangan;
     private int kapasitas;

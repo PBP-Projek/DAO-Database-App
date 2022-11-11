@@ -1,5 +1,6 @@
 package com.example.daoapp;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -14,10 +15,13 @@ import android.util.Log;
 import android.widget.PopupMenu;
 import android.widget.Spinner;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.example.daoapp.adapter.GedungAdapter;
+import com.example.daoapp.adapter.RuanganAdapter;
 import com.example.daoapp.entity.AppDatabase;
 import com.example.daoapp.entity.Gedung;
+import com.example.daoapp.entity.Ruangan;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -29,12 +33,12 @@ public class MainActivity extends AppCompatActivity {
     private AppDatabase appDatabase;
     private GedungAdapter gedungAdapter;
     private List<Gedung> gedungs;
-    Spinner spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getSupportActionBar().setTitle("Gedung");
 
         rvGedung = findViewById(R.id.rvGedung);
         fabAdd = findViewById(R.id.fabAdd);
@@ -73,6 +77,10 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             });
             popupMenu.show();
+        }, (position,view) -> {
+            Intent intent = new Intent(MainActivity.this, ListRuangan.class);
+            intent.putExtra("idGedung", gedungs.get(position).getIdGedung());
+            startActivity(intent);
         });
         rvGedung.setAdapter(gedungAdapter);
         rvGedung.setLayoutManager(new GridLayoutManager(this,2));
@@ -112,4 +120,5 @@ public class MainActivity extends AppCompatActivity {
             });
         });
     }
+
 }

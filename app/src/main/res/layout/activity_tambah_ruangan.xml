@@ -14,7 +14,7 @@
         android:padding="48dp">
 
         <EditText
-            android:id="@+id/etNamaRuang"
+            android:id="@+id/etNamaRuangan"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Nama Ruangan"
@@ -32,7 +32,7 @@
             android:textSize="16sp" />
 
         <Button
-            android:id="@+id/btnSubmitRuang"
+            android:id="@+id/btnSubmitRuangan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Submit"
