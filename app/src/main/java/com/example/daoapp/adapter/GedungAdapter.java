@@ -1,4 +1,4 @@
-package com.example.daoapp;
+package com.example.daoapp.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,15 +10,18 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.daoapp.R;
 import com.example.daoapp.entity.Gedung;
 
 import java.util.List;
 
 public class GedungAdapter extends RecyclerView.Adapter<GedungAdapter.ViewHolder> {
     private List<Gedung> gedungs;
+    private GedungListener moreListener;
 
-    public GedungAdapter(List<Gedung> gedungs) {
+    public GedungAdapter(List<Gedung> gedungs, GedungListener moreListener) {
         this.gedungs = gedungs;
+        this.moreListener = moreListener;
     }
 
     @NonNull
@@ -41,7 +44,7 @@ public class GedungAdapter extends RecyclerView.Adapter<GedungAdapter.ViewHolder
 
         holder.tvGedung.setText(namaGedung);
         holder.tvProdi.setText(prodi);
-
+        holder.ivMore.setOnClickListener(v -> moreListener.onClick(position,v));
     }
 
     @Override
@@ -61,5 +64,9 @@ public class GedungAdapter extends RecyclerView.Adapter<GedungAdapter.ViewHolder
             tvProdi = itemView.findViewById(R.id.tvProdi);
             ivMore = itemView.findViewById(R.id.ivMore);
         }
+    }
+
+    public interface GedungListener {
+        void onClick(int position, View view);
     }
 }

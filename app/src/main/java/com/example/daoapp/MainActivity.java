@@ -1,15 +1,21 @@
 package com.example.daoapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.PopupMenu;
+import android.widget.Spinner;
+import android.widget.Toast;
 
+import com.example.daoapp.adapter.GedungAdapter;
 import com.example.daoapp.entity.AppDatabase;
 import com.example.daoapp.entity.Gedung;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -22,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton fabAdd;
     private AppDatabase appDatabase;
     private GedungAdapter gedungAdapter;
+    private List<Gedung> gedungs;
+    Spinner spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,16 +40,11 @@ public class MainActivity extends AppCompatActivity {
         fabAdd = findViewById(R.id.fabAdd);
 
 
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                AppDatabase appDatabase = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "fsm").build();
-                Log.d("TAG","INSERTING");
-                appDatabase.gedungDao().insertGedung(new Gedung(1,"Gedung A","Informatika"));
-                int recordSize = appDatabase.gedungDao().getAllGedung().size();
-                Log.d("TAG","DISPLAY RECORD SIZE: "+recordSize);
+        appDatabase = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "fsm").build();
 
-            }
+        fabAdd.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, TambahGedung.class);
+            startActivity(intent);
         });
 
     }
@@ -53,24 +56,60 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setRvGedung(List<Gedung> gedungs) {
-        gedungAdapter = new GedungAdapter(gedungs);
+        gedungAdapter = new GedungAdapter(gedungs, (position,view) -> {
+            PopupMenu popupMenu = new PopupMenu(this, view);
+            popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
+            popupMenu.setOnMenuItemClickListener(item -> {
+                switch (item.getItemId()) {
+                    case R.id.edit:
+//                        Toast.makeText(this, "Edit", Toast.LENGTH_SHORT).show();
+                        editGedung(gedungs.get(position).getIdGedung());
+                        break;
+                    case R.id.delete:
+//                        Toast.makeText(this, "Delete", Toast.LENGTH_SHORT).show();
+                        deleteGedung(position);
+                        break;
+                }
+                return false;
+            });
+            popupMenu.show();
+        });
         rvGedung.setAdapter(gedungAdapter);
-        rvGedung.setLayoutManager(new LinearLayoutManager(this));
+        rvGedung.setLayoutManager(new GridLayoutManager(this,2));
     }
 
-    public void getAllGedung() {
-        List<Gedung> gedungs = new ArrayList<>();
+    private void editGedung(int idGedung) {
+        Intent intent = new Intent(MainActivity.this, EditGedung.class);
+        intent.putExtra("idGedung", idGedung);
+        startActivity(intent);
+    }
 
+    private void deleteGedung(int id) {
         AsyncTask.execute(() -> {
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//                gedungs.addAll(appDatabase.gedungDao().getAllGedung());
-//            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                appDatabase.gedungDao().deleteGedung(gedungs.get(id));
+                gedungs.remove(gedungs.get(id));
+            }
 
             runOnUiThread(() -> {
                 setRvGedung(gedungs);
-            });
 
-            AsyncTask.Status status = AsyncTask.Status.FINISHED;
+            });
+        });
+    }
+
+    public void getAllGedung() {
+        gedungs = new ArrayList<>();
+
+        AsyncTask.execute(() -> {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                gedungs.addAll(appDatabase.gedungDao().getAllGedung());
+            }
+
+            runOnUiThread(() -> {
+                setRvGedung(gedungs);
+                Log.d("12345678", "getAllGedung: "+gedungs.size());
+            });
         });
     }
 }

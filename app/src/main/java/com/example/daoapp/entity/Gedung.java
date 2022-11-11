@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey;
 
 @Entity
 public class Gedung {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     private int idGedung;
     private String namaGedung;
     private String prodi;
