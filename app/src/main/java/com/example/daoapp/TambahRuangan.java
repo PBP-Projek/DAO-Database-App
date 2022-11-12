@@ -17,6 +17,7 @@ public class TambahRuangan extends AppCompatActivity {
     private EditText etNamaRuangan, etKapasitas;
     private Button btnSubmitRuangan;
     private AppDatabase appDatabase;
+    private int idGedung;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,19 +27,20 @@ public class TambahRuangan extends AppCompatActivity {
         etNamaRuangan = findViewById(R.id.etNamaRuangan);
         etKapasitas = findViewById(R.id.etKapasitas);
         btnSubmitRuangan = findViewById(R.id.btnSubmitRuangan);
+        idGedung = getIntent().getIntExtra("idGedung", 0);
 
         btnSubmitRuangan.setOnClickListener(v -> {
             String namaRuangan = etNamaRuangan.getText().toString();
             int kapasitas = Integer.parseInt(etKapasitas.getText().toString());
 
-            addRuangan(namaRuangan, kapasitas);
+            addRuangan(namaRuangan, kapasitas, idGedung);
         });
     }
 
-    private void addRuangan(String namaRuangan, int kapasitas) {
+    private void addRuangan(String namaRuangan, int kapasitas, int idGedung) {
         AsyncTask.execute(() -> {
             appDatabase = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "fsm").build();
-            appDatabase.ruanganDao().insertRuangan(new Ruangan(0, namaRuangan, kapasitas));
+            appDatabase.ruanganDao().insertRuangan(new Ruangan(0, namaRuangan, kapasitas, idGedung));
             runOnUiThread(() -> {
                 Toast.makeText(getApplicationContext(), "Ruangan berhasil ditambahkan", Toast.LENGTH_SHORT).show();
                 finish();

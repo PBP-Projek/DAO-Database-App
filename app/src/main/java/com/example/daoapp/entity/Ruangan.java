@@ -1,6 +1,7 @@
 package com.example.daoapp.entity;
 
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
 @Entity
@@ -9,12 +10,14 @@ public class Ruangan {
     private int idRuangan;
     private String namaRuangan;
     private int kapasitas;
+    private int idGedung;
 
     //constructor
-    public Ruangan(int idRuangan, String namaRuangan, int kapasitas) {
+    public Ruangan(int idRuangan, String namaRuangan, int kapasitas, int idGedung) {
         this.idRuangan = idRuangan;
         this.namaRuangan = namaRuangan;
         this.kapasitas = kapasitas;
+        this.idGedung = idGedung;
     }
 
     //getter and setter
@@ -40,6 +43,14 @@ public class Ruangan {
 
     public void setKapasitas(int kapasitas) {
         this.kapasitas = kapasitas;
+    }
+
+    public int getIdGedung() {
+        return idGedung;
+    }
+
+    public void setIdGedung(int idGedung) {
+        this.idGedung = idGedung;
     }
 
 }

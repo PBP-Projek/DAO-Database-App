@@ -13,6 +13,9 @@ public interface RuanganDAO {
     @Query("SELECT * FROM ruangan")
     List<Ruangan> getAllRuangan();
 
+    @Query("SELECT * FROM ruangan WHERE idGedung = :idGedung")
+    List<Ruangan> getAllRuanganByIdGedung(int idGedung);
+
     @Insert
     void insertRuangan(Ruangan ruangan);
 

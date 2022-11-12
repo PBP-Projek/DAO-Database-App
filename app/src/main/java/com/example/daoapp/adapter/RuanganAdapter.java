@@ -17,9 +17,13 @@ import java.util.List;
 
 public class RuanganAdapter extends RecyclerView.Adapter<RuanganAdapter.ViewHolder> {
     private List<Ruangan> ruangans;
+    private RuanganListener editListener;
+    private RuanganListener deleteListener;
 
-    public RuanganAdapter(List<Ruangan> ruangans) {
+    public RuanganAdapter(List<Ruangan> ruangans, RuanganListener editListener, RuanganListener deleteListener) {
         this.ruangans = ruangans;
+        this.editListener = editListener;
+        this.deleteListener = deleteListener;
     }
 
     @NonNull
@@ -41,7 +45,9 @@ public class RuanganAdapter extends RecyclerView.Adapter<RuanganAdapter.ViewHold
         int kapasitas = ruangans.get(position).getKapasitas();
 
         holder.tvRuangan.setText(namaRuangan);
-        holder.kapasitas.setText(kapasitas);
+        holder.kapasitas.setText(String.valueOf(kapasitas));
+        holder.ivEdit.setOnClickListener(v -> editListener.onClick(position,v));
+        holder.ivDelete.setOnClickListener(v -> deleteListener.onClick(position,v));
     }
 
     @Override
@@ -61,6 +67,10 @@ public class RuanganAdapter extends RecyclerView.Adapter<RuanganAdapter.ViewHold
             ivEdit = itemView.findViewById(R.id.ivEdit);
             ivDelete = itemView.findViewById(R.id.ivDelete);
         }
+    }
+
+    public interface RuanganListener {
+        void onClick(int position, View view);
     }
 }
 

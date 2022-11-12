@@ -25,6 +25,7 @@ public class ListRuangan extends AppCompatActivity {
     private AppDatabase appDatabase;
     private RuanganAdapter ruanganAdapter;
     private List<Ruangan> ruangans;
+    private int idGedung, idRuangan;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,11 +35,14 @@ public class ListRuangan extends AppCompatActivity {
 
         rvRuangan = findViewById(R.id.rvRuangan);
         fab = findViewById(R.id.fab);
+        idGedung = getIntent().getIntExtra("idGedung", 0);
+        idRuangan = getIntent().getIntExtra("idRuangan", 0);
 
         appDatabase = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "fsm").build();
 
         fab.setOnClickListener(v -> {
             Intent intent = new Intent(ListRuangan.this, TambahRuangan.class);
+            intent.putExtra("idGedung", idGedung);
             startActivity(intent);
         });
     }
@@ -46,15 +50,15 @@ public class ListRuangan extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        getAllRuangan();
+        getAllRuangan(idGedung);
     }
 
-    private void getAllRuangan() {
+    private void getAllRuangan(int idGedung) {
         ruangans = new ArrayList<>();
 
         AsyncTask.execute(() -> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                ruangans.addAll(appDatabase.ruanganDao().getAllRuangan());
+                ruangans.addAll(appDatabase.ruanganDao().getAllRuanganByIdGedung(idGedung));
             }
 
             runOnUiThread(() -> {
@@ -65,8 +69,30 @@ public class ListRuangan extends AppCompatActivity {
     }
 
     private void setRvRuangan(List<Ruangan> ruangans) {
-        RuanganAdapter ruanganAdapter = new RuanganAdapter(ruangans);
+        ruanganAdapter = new RuanganAdapter(ruangans, (position, view) -> {
+            editRuangan(ruangans.get(position));
+        },
+                (position, view) -> {
+                    deleteRuangan(ruangans.get(position));
+                    ruangans.remove(position);
+                    setRvRuangan(ruangans);
+                });
         rvRuangan.setAdapter(ruanganAdapter);
         rvRuangan.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    private void editRuangan(Ruangan ruangan) {
+        Intent intent = new Intent(ListRuangan.this, EditRuangan.class);
+        intent.putExtra("idRuangan", ruangan.getIdRuangan());
+        intent.putExtra("namaRuangan", ruangan.getNamaRuangan());
+        intent.putExtra("kapasitas", ruangan.getKapasitas());
+        intent.putExtra("idGedung", ruangan.getIdGedung());
+        startActivity(intent);
+    }
+
+    private void deleteRuangan(Ruangan ruangan) {
+        AsyncTask.execute(() -> {
+            appDatabase.ruanganDao().deleteRuangan(ruangan);
+        });
     }
 }
